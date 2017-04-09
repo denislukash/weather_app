@@ -1,0 +1,14 @@
+{
+  "name": "application-name",
+  "version": "0.0.1",
+  "devDependencies": {
+    "css-loader": "^0.28.0",
+    "extract-text-webpack-plugin": "^2.1.0",
+    "file-loader": "^0.11.1",
+    "less": "^2.7.2",
+    "less-loader": "^4.0.3",
+    "style-loader": "^0.16.1",
+    "url-loader": "^0.5.8",
+    "webpack": "^2.3.3"
+  }
+}

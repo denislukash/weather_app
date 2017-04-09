@@ -1,0 +1,178 @@
+@import url('https://fonts.googleapis.com/css?family=Anton');
+@firs_point: 1200px;
+@second_point: 1000px;
+@mobile_point: 750px;
+@small_mobile: 600px;
+body{
+  min-width: 320px;
+  background: url(../image/background.jpg) repeat-y;
+  background-size: cover;
+}
+header{
+  font-family: Anton, sans-serif;
+  padding: 1% 0;
+  height: 10%;
+  form{
+    text-align: center;
+    input[type=text]{
+      position: relative;
+      top: -17px;
+    }
+    input[type=image]{
+      width: 60px;
+      height: 40px;
+    }
+  }
+  h1{
+    font-size: 5vw;
+    color: rgba(182, 255, 143, 0.53);
+    text-align: center;
+  }
+}
+
+main{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+    .weather-block{
+      color: white;
+      width: 50%;
+      padding: 2%;
+      display: flex;
+      flex-wrap: wrap;
+      box-sizing: border-box;
+      @media (max-width: @firs_point) {
+        width: 70%;
+      }
+      @media (max-width: @second_point) {
+        width: 85%;
+      }
+      @media (max-width: @mobile_point) {
+        width: 99%;
+      }
+      .delete_button{
+        position: absolute;
+        color: rgba(255, 0, 0, 0.5);
+        border: 1px solid rgba(255, 0, 0, 0.51);
+        padding: 5px 20px;
+        font-size: 1vw;
+        @media (max-width: @small_mobile) {
+          font-size: 15px;
+        }
+        &:hover{
+          cursor: pointer;
+          box-shadow: 0 0 10px rgba(255, 0, 0, 1);
+          color: rgba(255, 0, 0, 1);
+          border: 1px solid rgba(255, 0, 0, 1);
+        }
+      }
+      h1,p{
+        text-align: center;
+        width: 100%;
+      }
+      .current-weather{
+        width: 100%;
+        display: flex;
+        font-size: 1vw;
+        @media (max-width: @firs_point) {
+          font-size: 1.3vw;
+        }
+        @media (max-width: @second_point) {
+          font-size: 1.5vw;
+        }
+        @media (max-width: @mobile_point) {
+          font-size: 17px;
+        }
+        @media (max-width: @small_mobile) {
+          flex-wrap: wrap;
+        }
+        .tempperature{
+          font-size: 10vw;
+          display: inline-block;
+          width: 35%;
+          text-align: center;
+          @media (max-width: @mobile_point) {
+            padding-top: 5%;
+            padding-left: 10%;
+          }
+          @media (max-width: @small_mobile) {
+            padding-top: 5%;
+            font-size: 15vw;
+            width: 50%;
+            padding-left: 0;
+          }
+
+            span{
+              position: absolute;
+              font-size: 5vw;
+            }
+        }
+        .clouds{
+          padding: 0 5%;
+          text-align: center;
+          width: 20%;
+          box-sizing: border-box;
+            @media (max-width: @small_mobile) {
+              padding: 0;
+              width: 50%;
+          }
+            img{
+              margin: 20% 0;
+              @media (max-width: @small_mobile) {
+                margin: 0;
+                width: 50px;
+                height: 50px;
+                padding: 10px 0 20px 0;
+              }
+            }
+        }
+        .weather-condition,
+        .indicators{
+          width: 30%;
+          box-sizing: border-box;
+          @media (max-width: @small_mobile) {
+            width: 60%;
+          }
+          ul{
+            padding: 30px 0;
+            li{
+              list-style-type: none;
+              margin-bottom: 10px;
+            }
+          }
+        }
+        .indicators{
+          width: 15%;
+          @media (max-width: @small_mobile) {
+            width: 40%;
+          }
+          li{
+            text-align: center;
+          }
+        }
+      }
+      .next-days-weather{
+        width: 100%;
+        display: flex;
+        font-size: 1vw;
+        @media (max-width: @small_mobile) {
+          flex-wrap: wrap;
+        }
+          div{
+            width: 25%;
+            text-align: center;
+            box-sizing: border-box;
+            @media (max-width: @firs_point) {
+              font-size: 1.3vw;
+            }
+            @media (max-width: @second_point) {
+              font-size: 1.5vw;
+            }
+            @media (max-width: @mobile_point) {
+              font-size: 17px;
+            }
+          }
+      }
+    }
+}
+

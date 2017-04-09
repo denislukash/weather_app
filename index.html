@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Weather</title>
+    <link rel="stylesheet" href="app/styles/reset.css" type="text/css">
+    <link rel="stylesheet" href="build/index.css" type="text/css">
+</head>
+<body>
+<header>
+    <h1>ALL WORLD WEATHER</h1>
+    <form method="post" name="city_enter" id="form">
+        <input type="text" name="city" placeholder="Enter city name">
+        <input type="image" src="app/image/GoButton.png" alt="go">
+    </form>
+</header>
+<main id="main"></main>
+<script src="app/dev_lib/jquery-3.1.1.js" type="text/javascript"></script>
+<script src="app/dev_lib/handlebars-v4.0.5.js" type="text/javascript"></script>
+<script src="build/index.js" type="text/javascript"></script>
+<script type="text" id="template">
+<div class="weather-block" id="{{this.city.name}}">
+    <span class="delete_button">DELETE</span>
+    <h1>{{this.city.name}}, {{this.city.country}}</h1>
+    <p>{{this.current_day_info.day_of_week}}, {{this.current_day_info.month}} {{this.current_day_info.number_day}} {{this.current_day_info.time}}</p>
+    <div class="current-weather">
+        <h2 class="tempperature">{{this.list.0.main.temp}}<span>&deg</span></h2>
+        <div class="clouds">
+            <img src="http://openweathermap.org/img/w/{{this.list.0.weather.0.icon}}.png" alt="cloud">
+            <p>{{this.list.0.weather.0.description}}</p>
+        </div>
+        <div class="weather-condition">
+            <ul>
+                <li>Atm. pressure,<i>hPa</i></li>
+                <li>Humidity,<i>%</i></li>
+                <li>Cloudiness,<i>%</i></li>
+                <li>Wind speed,<i>meter/sec</i></li>
+            </ul>
+        </div>
+        <div class="indicators">
+            <ul>
+                <li>{{this.list.0.main.pressure}}</li>
+                <li>{{this.list.0.main.humidity}}</li>
+                <li>{{this.list.0.clouds.all}}</li>
+                <li>{{this.list.0.wind.speed}}</li>
+            </ul>
+        </div>
+    </div>
+    <div class="next-days-weather">
+    {{#each next_days}}
+        <div>
+            <h2>{{week_day}}</h2>
+            <img src="http://openweathermap.org/img/w/{{icon}}.png" alt="cloud">
+            <p>{{temp}}<span>&deg</span></p>
+        </div>
+        {{/each}}
+    </div>
+</div>
+</script>
+</body>
+</html>
