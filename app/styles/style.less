@@ -3,6 +3,7 @@
 @second_point: 1000px;
 @mobile_point: 750px;
 @small_mobile: 600px;
+@last_point: 420px;
 body{
   min-width: 320px;
   background: url(../image/background.jpg) repeat-y;
@@ -59,11 +60,22 @@ main{
         @media (max-width: @small_mobile) {
           font-size: 15px;
         }
+        @media (max-width: @last_point) {
+          font-size: 10px;
+          padding: 5px 10px;
+        }
         &:hover{
           cursor: pointer;
           box-shadow: 0 0 10px rgba(255, 0, 0, 1);
           color: rgba(255, 0, 0, 1);
           border: 1px solid rgba(255, 0, 0, 1);
+        }
+      }
+      .description_time{
+        font-style: italic;
+        font-size: 1vw;
+        @media (max-width: @small_mobile) {
+          font-size: 2vw;
         }
       }
       h1,p{
@@ -100,6 +112,9 @@ main{
             font-size: 15vw;
             width: 50%;
             padding-left: 0;
+          }
+          @media (max-width: @last_point) {
+            font-size: 20vw;
           }
 
             span{

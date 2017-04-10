@@ -31,16 +31,20 @@ getGeoLocation()
 $("#form").on("submit", function (event) {
     let city = this.elements.city.value;
 
-    if(localStorage.isDataInStorage(city)){
+    if( localStorage.isDataInStorage(city) ){
         let data = localStorage.getDataFromLocalStorage(city);
         addTemplateToHtml(data);
         setDeleteEvent();
+        
     }else{
+        
         apiRequest(city)
             .then(
                 resolve => {
                     handleDataForecast(resolve);
                     addTemplateToHtml(resolve);
+                    //after each new api request I save data to session storage, then if user search this city again
+                    //before request I check in storage is this city available
                     localStorage.setDataToLocalStorage(city, resolve);
                     setDeleteEvent();
                 },
@@ -50,11 +54,14 @@ $("#form").on("submit", function (event) {
    event.preventDefault();
 });
 
+//add to forecast object info about current day and search forecast on next 4 days
 function handleDataForecast (data) {
     let indexOfNextDays = searchIndexofNextDaysForecast(forecast_day.getDateNextDays(QUANTITY_DAYS_FORECAST), data);
+    transformKelvinToCelsius(data, 0);
+
     data.next_days = [];
     data.current_day_info = forecast_day.current_day_info;
-    transformKelvinToCelsius(data, 0);
+
     for(let i = 0; i < QUANTITY_DAYS_FORECAST; i++){
         data.next_days.push({
             weekDay: nextWeekDays[i],
@@ -64,12 +71,14 @@ function handleDataForecast (data) {
     }
 }
 
+//after each append template to html, I need set handle for delete block
 function setDeleteEvent() {
     $(".delete_button").on("click", (e)=>{
         e.target.parentElement.remove();
     });
 }
 
+//work with handlebars
 function addTemplateToHtml(data) {
     let htmlTemp = $("#template").html();
     let template = Handlebars.compile(htmlTemp);
@@ -77,14 +86,20 @@ function addTemplateToHtml(data) {
     $("#main").append(result);
 }
 
+//for next days forecast I choose time 15:00 for get temperature,I search necessary to me date and save
+//index to array, than I use that index in handlebars template
 function searchIndexofNextDaysForecast(dateArray, data) {
     let arr = [];
     let result = [];
+
     dateArray.forEach((item, index) => {
         arr[index] = item + " 15:00:00";
     });
+
     data.list.forEach((item, index) => {
+
         arr.forEach((arg) => {
+
             if(arg === item.dt_txt){
                 result.push(index);
                 transformKelvinToCelsius(data, index);
@@ -101,6 +116,8 @@ function transformKelvinToCelsius(data, index) {
         data.list[index].main.temp = parseInt(data.list[index].main.temp - 273.15, 10)
     }
 }
+
+//helper function for add to template next days forecast with loops
 Handlebars.registerHelper("week_day", function () {
     return Handlebars.escapeExpression(this.weekDay) + "";
 });

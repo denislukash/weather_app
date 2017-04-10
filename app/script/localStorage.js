@@ -1,6 +1,6 @@
 "use strict";
 export let localStorage = new Storage();
-
+//class for working with session storage, including method for add, get and check info from storage
 function Storage() {
 
     this.getDataFromLocalStorage = (key) =>{

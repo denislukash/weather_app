@@ -6,7 +6,9 @@ export function getGeoLocation() {
             let coordinates = {};
             coordinates.lat = position.coords.latitude;
             coordinates.lon = position.coords.longitude;
+            
             resolve(coordinates);
+            
         }, (error) => {
             switch(error.code) {
                 case 0: reject(new Error("UNKNOWN_ERROR"));

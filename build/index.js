@@ -77,31 +77,53 @@ var index =
 
 function apiRequest(settings) {
     let url;
+    //if user accept share his coordinates - use request by coordinates
+    //if denided, suggest to user search by city name
     if(typeof settings === "string"){
         url = `https://api.openweathermap.org/data/2.5/forecast?q=${settings}&APPID=447928fbfad655830ae35b93c34bbedb`
     }else{
         url = `https://api.openweathermap.org/data/2.5/forecast?lat=${settings.lat}&lon=${settings.lon}&APPID=447928fbfad655830ae35b93c34bbedb` ;
     }
     return new Promise((resolve, reject) => {
-        $.ajax({
-            url: url,
-            dataType: "json",
-            type: "GET",
-            crossDomain: true,
-            error: (xhr) => {
-                if(xhr.status == 404){
-                    alert("404 Not found your city")
-                }else{
-                    alert(`Cant access to server. Request status: ${xhr.status}.`)
-                }
-                reject();
-            },
-            success:(data) => {
-                resolve(data);
-            }
-        })
+
+        let xhr = new XMLHttpRequest();
+
+        xhr.open("GET", url, false);
+        xhr.send();
+
+        if( xhr.status != 200 ){
+            alert(`Error! Cant get response from server! ${xhr.status} - ${xhr.statusText}`);
+            reject();
+        }else{
+            let data = JSON.parse(xhr.responseText);
+            resolve(data);
+        }
     })
 }
+
+// export function apiRequest(settings) {
+//     let url;
+//     //if user accept share his coordinates - use request by coordinates
+//     //if denided, suggest to user search by city name
+//     if(typeof settings === "string"){
+//         url = `http://api.openweathermap.org/data/2.5/forecast?q=${settings}&APPID=447928fbfad655830ae35b93c34bbedb`
+//     }else{
+//         url = `http://api.openweathermap.org/data/2.5/forecast?lat=${settings.lat}&lon=${settings.lon}&APPID=447928fbfad655830ae35b93c34bbedb` ;
+//     }
+//     return new Promise((resolve, reject) => {
+//         $.getJSON(url, function (data) {
+//             resolve(data);
+//         })
+//             .fail(function (data) {
+//                 if(data.status == 404){
+//                     alert("404 Not found your city")
+//                 }else{
+//                     alert(`Cant access to server. Request status: ${data.status}.`)
+//                 }
+//                 reject();
+//             });
+//     })
+// }
 
 /***/ }),
 /* 1 */
@@ -112,7 +134,10 @@ function apiRequest(settings) {
 
 
 let forecast_day = new NextDays();
-
+//class for working with date, I try to create universal methods for reuse this code
+//methods in this class can give you all current day info with full names of month and day weeks
+// next days info from current date, name of month,
+//name of day weeks and dates
 function NextDays() {
     
     let days_of_week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -125,16 +150,17 @@ function NextDays() {
             day_of_week: days_of_week[date.getDay()],
             month: month[date.getMonth()],
             number_day: date.getDate(),
-            time: `${date.getHours()}:${date.getMinutes()}`
+            time: `${date.getHours()} : ${date.getMinutes()}`
     };
     //get array with next X days from current day
     this.getDateNextDays = (quantity_days_for_forecast) => {
         let date_now = current_day.split("-");
-        // let day_now = date_now[2];
         let result = [];
+        
         for(let i = +date_now[2] + 1, j = 0; j < quantity_days_for_forecast; j++, i++ ){
             let day = i;
             let month = date_now[1];
+            
             if(day > date.daysInMonth()){
                 day = 1;
                 month = (+month + 1) + "";
@@ -150,8 +176,9 @@ function NextDays() {
     //get array with names of days in week
     this.getNextNamesDayOfWeek = (quantity_days_for_forecast) => {
         let result = [];
-        for(let i = date.getDay()+1, j = 0; j < quantity_days_for_forecast; i++, j++ ){
-            if(i > days_of_week.length-1) i = 0;
+        
+        for(let i = date.getDay() + 1, j = 0; j < quantity_days_for_forecast; i++, j++ ){
+            if(i > days_of_week.length - 1) i = 0;
             result.push(days_of_week[i])
         }
         return result;
@@ -171,7 +198,7 @@ Date.prototype.daysInMonth = function() {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return localStorage; });
 
 let localStorage = new Storage();
-
+//class for working with session storage, including method for add, get and check info from storage
 function Storage() {
 
     this.getDataFromLocalStorage = (key) =>{
@@ -200,7 +227,9 @@ function getGeoLocation() {
             let coordinates = {};
             coordinates.lat = position.coords.latitude;
             coordinates.lon = position.coords.longitude;
+            
             resolve(coordinates);
+            
         }, (error) => {
             switch(error.code) {
                 case 0: reject(new Error("UNKNOWN_ERROR"));
@@ -270,16 +299,20 @@ __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__script_location__["a" /* getG
 $("#form").on("submit", function (event) {
     let city = this.elements.city.value;
 
-    if(__WEBPACK_IMPORTED_MODULE_4__script_localStorage__["a" /* localStorage */].isDataInStorage(city)){
+    if( __WEBPACK_IMPORTED_MODULE_4__script_localStorage__["a" /* localStorage */].isDataInStorage(city) ){
         let data = __WEBPACK_IMPORTED_MODULE_4__script_localStorage__["a" /* localStorage */].getDataFromLocalStorage(city);
         addTemplateToHtml(data);
         setDeleteEvent();
+        
     }else{
+        
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__script_api__["a" /* apiRequest */])(city)
             .then(
                 resolve => {
                     handleDataForecast(resolve);
                     addTemplateToHtml(resolve);
+                    //after each new api request I save data to session storage, then if user search this city again
+                    //before request I check in storage is this city available
                     __WEBPACK_IMPORTED_MODULE_4__script_localStorage__["a" /* localStorage */].setDataToLocalStorage(city, resolve);
                     setDeleteEvent();
                 },
@@ -289,11 +322,14 @@ $("#form").on("submit", function (event) {
    event.preventDefault();
 });
 
+//add to forecast object info about current day and search forecast on next 4 days
 function handleDataForecast (data) {
     let indexOfNextDays = searchIndexofNextDaysForecast(__WEBPACK_IMPORTED_MODULE_3__script_date__["a" /* forecast_day */].getDateNextDays(QUANTITY_DAYS_FORECAST), data);
+    transformKelvinToCelsius(data, 0);
+
     data.next_days = [];
     data.current_day_info = __WEBPACK_IMPORTED_MODULE_3__script_date__["a" /* forecast_day */].current_day_info;
-    transformKelvinToCelsius(data, 0);
+
     for(let i = 0; i < QUANTITY_DAYS_FORECAST; i++){
         data.next_days.push({
             weekDay: nextWeekDays[i],
@@ -303,12 +339,14 @@ function handleDataForecast (data) {
     }
 }
 
+//after each append template to html, I need set handle for delete block
 function setDeleteEvent() {
     $(".delete_button").on("click", (e)=>{
         e.target.parentElement.remove();
     });
 }
 
+//work with handlebars
 function addTemplateToHtml(data) {
     let htmlTemp = $("#template").html();
     let template = Handlebars.compile(htmlTemp);
@@ -316,14 +354,20 @@ function addTemplateToHtml(data) {
     $("#main").append(result);
 }
 
+//for next days forecast I choose time 15:00 for get temperature,I search necessary to me date and save
+//index to array, than I use that index in handlebars template
 function searchIndexofNextDaysForecast(dateArray, data) {
     let arr = [];
     let result = [];
+
     dateArray.forEach((item, index) => {
         arr[index] = item + " 15:00:00";
     });
+
     data.list.forEach((item, index) => {
+
         arr.forEach((arg) => {
+
             if(arg === item.dt_txt){
                 result.push(index);
                 transformKelvinToCelsius(data, index);
@@ -340,6 +384,8 @@ function transformKelvinToCelsius(data, index) {
         data.list[index].main.temp = parseInt(data.list[index].main.temp - 273.15, 10)
     }
 }
+
+//helper function for add to template next days forecast with loops
 Handlebars.registerHelper("week_day", function () {
     return Handlebars.escapeExpression(this.weekDay) + "";
 });
