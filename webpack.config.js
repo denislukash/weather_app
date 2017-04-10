@@ -15,7 +15,7 @@ module.exports = {
         library: '[name]'
     },
 
-    watch: true,
+    watch: false,
 
     watchOptions: {
         aggregateTimeout: 100 
