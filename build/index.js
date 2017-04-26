@@ -75,55 +75,29 @@ var index =
 /* harmony export (immutable) */ __webpack_exports__["a"] = apiRequest;
 
 
-function apiRequest(settings) {
+function apiRequest(settings, apiKey) {
     let url;
     //if user accept share his coordinates - use request by coordinates
     //if denided, suggest to user search by city name
     if(typeof settings === "string"){
-        url = `https://api.openweathermap.org/data/2.5/forecast?q=${settings}&APPID=447928fbfad655830ae35b93c34bbedb`
+        url = `http://api.openweathermap.org/data/2.5/forecast?q=${settings}&APPID=${apiKey}`
     }else{
-        url = `https://api.openweathermap.org/data/2.5/forecast?lat=${settings.lat}&lon=${settings.lon}&APPID=447928fbfad655830ae35b93c34bbedb` ;
+        url = `http://api.openweathermap.org/data/2.5/forecast?lat=${settings.lat}&lon=${settings.lon}&APPID=${apiKey}` ;
     }
     return new Promise((resolve, reject) => {
-
-        let xhr = new XMLHttpRequest();
-
-        xhr.open("GET", url, true);
-        xhr.send();
-
-        if( xhr.status != 200 ){
-            alert(`Error! Cant get response from server! ${xhr.status} - ${xhr.statusText}`);
-            reject();
-        }else{
-            let data = JSON.parse(xhr.responseText);
+        $.getJSON(url, function (data) {
             resolve(data);
-        }
+        })
+            .fail(function (data) {
+                if(data.status == 404){
+                    alert("404 Not found your city")
+                }else{
+                    alert(`Cant access to server. Request status: ${data.status}.`)
+                }
+                reject();
+            });
     })
 }
-
-// export function apiRequest(settings) {
-//     let url;
-//     //if user accept share his coordinates - use request by coordinates
-//     //if denided, suggest to user search by city name
-//     if(typeof settings === "string"){
-//         url = `http://api.openweathermap.org/data/2.5/forecast?q=${settings}&APPID=447928fbfad655830ae35b93c34bbedb`
-//     }else{
-//         url = `http://api.openweathermap.org/data/2.5/forecast?lat=${settings.lat}&lon=${settings.lon}&APPID=447928fbfad655830ae35b93c34bbedb` ;
-//     }
-//     return new Promise((resolve, reject) => {
-//         $.getJSON(url, function (data) {
-//             resolve(data);
-//         })
-//             .fail(function (data) {
-//                 if(data.status == 404){
-//                     alert("404 Not found your city")
-//                 }else{
-//                     alert(`Cant access to server. Request status: ${data.status}.`)
-//                 }
-//                 reject();
-//             });
-//     })
-// }
 
 /***/ }),
 /* 1 */
@@ -274,12 +248,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 const QUANTITY_DAYS_FORECAST = 4;
+const API_KEY = "447928fbfad655830ae35b93c34bbedb";
 let nextWeekDays = __WEBPACK_IMPORTED_MODULE_3__script_date__["a" /* forecast_day */].getNextNamesDayOfWeek(QUANTITY_DAYS_FORECAST);
 
 __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__script_location__["a" /* getGeoLocation */])()
     .then(
         resolve => {
-            return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__script_api__["a" /* apiRequest */])(resolve);
+            return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__script_api__["a" /* apiRequest */])(resolve, API_KEY);
         },
         reject => {
             alert(`${reject}! Cant resolve your position. Try to enter your city`);
@@ -306,7 +281,7 @@ $("#form").on("submit", function (event) {
         
     }else{
         
-        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__script_api__["a" /* apiRequest */])(city)
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__script_api__["a" /* apiRequest */])(city, API_KEY)
             .then(
                 resolve => {
                     handleDataForecast(resolve);

@@ -6,12 +6,13 @@ import {forecast_day} from "./script/date";
 import {localStorage} from "./script/localStorage";
 
 const QUANTITY_DAYS_FORECAST = 4;
+const API_KEY = "447928fbfad655830ae35b93c34bbedb";
 let nextWeekDays = forecast_day.getNextNamesDayOfWeek(QUANTITY_DAYS_FORECAST);
 
 getGeoLocation()
     .then(
         resolve => {
-            return apiRequest(resolve);
+            return apiRequest(resolve, API_KEY);
         },
         reject => {
             alert(`${reject}! Cant resolve your position. Try to enter your city`);
@@ -38,7 +39,7 @@ $("#form").on("submit", function (event) {
         
     }else{
         
-        apiRequest(city)
+        apiRequest(city, API_KEY)
             .then(
                 resolve => {
                     handleDataForecast(resolve);
